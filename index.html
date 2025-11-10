@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MQS Reference Guide — Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Dark navy palette to match the reference */
+      --bg:#0b1220;           /* page background */
+      --panel:#0f1a2f;        /* sidebar & surfaces */
+      --surface:#101a30;      /* main surface */
+      --card:#121f38;         /* cards */
+      --card-border:#1a2a4a;  /* subtle border */
+      --muted:#93a4c4;        /* secondary text */
+      --text:#e6ecff;         /* primary text */
+      --brand:#7aa2ff;        /* soft indigo accent */
+      --brand-strong:#6b90ff; /* buttons/links */
+      --ring:#2a4275;         /* focus ring */
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35);
+      --radius-lg:16px; --radius-sm:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.55 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    a{color:inherit;text-decoration:none}
+    .app{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100vh}
+    /* Sidebar */
+    .sidebar{background:linear-gradient(180deg,var(--panel),#0c1730);padding:28px 20px;border-right:1px solid var(--card-border)}
+    .logo{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .logo-badge{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#223a72,#1b2d57)}
+    .logo-badge svg{width:18px;height:18px;opacity:.95}
+    .logo-title{font-weight:700;letter-spacing:.2px}
+
+    .nav-section{margin-top:24px}
+    .nav-label{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.12em;margin:18px 10px 10px}
+    .nav{display:flex;flex-direction:column;gap:2px}
+    .nav a{padding:10px 12px;border-radius:10px;color:#c9d7ff;border:1px solid transparent;display:flex;justify-content:space-between;align-items:center}
+    .nav a:hover{background:#0e1a33;border-color:#1a2a4a}
+    .nav a.active{background:#0e1a33;border-color:#2a447a}
+    .split{height:1px;background:#142246;margin:16px 0}
+
+    /* Main */
+    .main{padding:34px 34px 60px;background:linear-gradient(180deg,rgba(19,30,57,.5),rgba(19,30,57,.2) 160px,rgba(19,30,57,.05));}
+    .container{max-width:1240px;margin:0 auto}
+
+    .searchbar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--card-border);border-radius:12px;padding:12px 14px;max-width:520px}
+    .searchbar input{flex:1;background:transparent;border:0;color:var(--text);outline:none}
+    .searchbar:focus-within{box-shadow:0 0 0 3px var(--ring)}
+
+    .hero{margin:26px 0 22px}
+    .hero h1{margin:0 0 8px;font-size:38px;line-height:1.15;font-weight:700}
+    .hero p{margin:0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:28px}
+    .card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start}
+    .card .icon{flex:0 0 auto;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#1a2f5c,#15274e);border:1px solid #223a72}
+    .card h3{margin:2px 0 6px;font-weight:700}
+    .card p{margin:0 0 14px;color:var(--muted)}
+    .card a.cta{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(122,162,255,.08);border:1px solid #29427a;color:#cfe0ff}
+    .card a.cta:hover{background:rgba(122,162,255,.14)}
+
+    .footer{margin-top:38px;color:var(--muted);font-size:13px}
+
+    /* Doc pages */
+    .doc-section{display:none}
+    .doc-section.active{display:block}
+    .doc-header{display:flex;align-items:center;justify-content:flex-end;gap:16px;margin:10px 0 6px}
+    .backlink{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(122,162,255,.08);border:1px solid #29427a;color:#cfe0ff}
+
+    /* New: hero + figure + body styles (clean harmony) */
+    .doc-hero{display:flex;align-items:center;gap:16px;margin:8px 0 18px}
+    .doc-hero .glyph{flex:0 0 auto;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#1a2f5c,#15274e);border:1px solid #223a72;box-shadow:var(--shadow)}
+    .doc-hero h2{margin:0;font-size:34px;line-height:1.2}
+    .doc-hero p{margin:4px 0 0;color:var(--muted)}
+
+    .doc-body{max-width:1020px;margin:0 auto}
+    .prose h3{margin:22px 0 8px;font-size:22px}
+    .prose p{margin:6px 0 10px;color:#d8e2ff}
+    .prose ul,.prose ol{margin:6px 0 14px 22px}
+
+    .figure{background:linear-gradient(135deg,rgba(122,162,255,.28),rgba(122,162,255,.08));border-radius:22px;padding:22px;border:1px solid #2a4275;box-shadow:var(--shadow);margin:12px 0 24px}
+    .figure-inner{background:var(--panel);border:1px solid var(--card-border);border-radius:16px;padding:16px}
+    .figure img{width:100%;height:auto;border-radius:12px;display:block}
+    .figure .caption{color:var(--muted);font-size:14px;text-align:center;margin-top:8px}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:sticky;top:0;z-index:10;border-right:none;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:14px}
+      .sidebar .nav-section,.sidebar .split{display:none}
+    }
+    @media (max-width: 780px){
+      .grid{grid-template-columns:1fr}
+      .hero h1{font-size:30px}
+    }
+  /* Gallery */
+    .gallery-box{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:22px;margin:20px 0}
+    .gallery-view{position:relative;border-radius:12px;background:var(--panel);border:1px solid var(--card-border);overflow:hidden}
+    .gallery-view img{width:100%;aspect-ratio:16/9;object-fit:contain;background:var(--surface)}
+    .gallery-ctrl{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);padding:16px;display:flex;align-items:center;justify-content:space-between}
+    .gallery-ctrl button{width:32px;height:32px;border-radius:8px;background:rgba(122,162,255,.15);border:1px solid #29427a;color:#cfe0ff;cursor:pointer;font-size:18px}
+    .gallery-ctrl button:hover:not(:disabled){background:rgba(122,162,255,.25)}
+    .gallery-ctrl button:disabled{opacity:.3;cursor:not-allowed}
+    .gallery-ctrl div{text-align:center;flex:1}
+    .gallery-ctrl span{font-size:12px;color:#cfe0ff}
+    .gallery-thumbs{display:flex;gap:8px;margin-top:12px;overflow-x:auto}
+    .gallery-thumbs div{flex-shrink:0;width:70px;height:50px;border-radius:6px;border:2px solid transparent;background:var(--surface);cursor:pointer;display:grid;place-items:center;font-size:10px;color:var(--muted)}
+    .gallery-thumbs div.active{border-color:#6b90ff}
+    .gallery-info{background:var(--surface);border:1px solid var(--card-border);border-radius:10px;padding:14px;margin-top:14px}
+    .gallery-info strong{color:#7aa2ff;font-size:13px}
+    .gallery-info ul{margin:8px 0 0 18px;padding:0;font-size:13px;line-height:1.5}
+
+    /* Matrix */
+    .matrix-box{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:22px;margin:20px 0}
+    .matrix-toggle{padding:8px 14px;border-radius:10px;background:rgba(122,162,255,.08);border:1px solid #29427a;color:#cfe0ff;cursor:pointer;font-size:14px}
+    .matrix-toggle:hover{background:rgba(122,162,255,.14)}
+    .matrix-content{display:none;overflow-x:auto;margin-top:12px}
+    .matrix-content.show{display:block}
+    .matrix-table{width:100%;border-collapse:collapse;font-size:13px}
+    .matrix-table th{text-align:left;padding:10px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--card-border)}
+    .matrix-table td{padding:10px;border-bottom:1px solid rgba(26,42,74,.4)}
+    .matrix-table tr:hover{background:rgba(122,162,255,.04)}
+    .matrix-table .c1{color:#7aa2ff;font-weight:500}
+    .matrix-table .c2{color:#6b90ff}
+    .matrix-table .c3{color:#ff7a7a;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-badge" aria-hidden="true">
+          <!-- book/code icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19a2 2 0 0 0 2 2h14"/><path d="M17 22V4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v17"/><path d="M7 6h8"/><path d="M7 10h8"/></svg>
+        </div>
+        <div class="logo-title">MQS Reference Guide</div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Documentation</div>
+        <nav class="nav">
+          <a href="#core-rules">Core rules <span class="chev">›</span></a>
+          <a href="#core-terms">Core terms <span class="chev">›</span></a>
+          <a href="#mapping">Mapping process <span class="chev">›</span></a>
+          <a href="#interaction">Interaction rules <span class="chev">›</span></a>
+          <a href="#execution">Execution playbooks <span class="chev">›</span></a>
+          <a href="#risk">Risk System Methodology <span class="chev">›</span></a>
+        </nav>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Quick Tools</div>
+        <nav class="nav">
+          <a href="#gallery">Visual Gallery <span>›</span></a>
+          <a href="#matrix">Scenario Matrix <span>›</span></a>
+        </nav>
+      </div>
+      <div class="split"></div>
+
+      <div class="nav-section">
+        <div class="nav-label">Help Center</div>
+        <nav class="nav">
+          <a href="#checklist">Pre‑trade checklist</a>
+          <a href="#overview">Overview</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="container">
+        <div class="searchbar" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#93a4c4" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.6-3.6"/></svg>
+          <input type="text" placeholder="Search docs… (type e.g. magnet, node)" aria-label="Search docs" />
+        </div>
+
+        <!-- OVERVIEW GRID -->
+        <section id="overview" class="overview">
+          <header class="hero">
+            <h1>MQS Docs Guide</h1>
+            <p>State / Node / Magnet method — clean, linkable documentation for your Whop course. Click a card to open a section.</p>
+          </header>
+
+          <section class="grid" aria-label="Documentation sections">
+            <!-- Card 1 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6v12"/><rect x="3" y="6" width="18" height="12" rx="2"/></svg>
+              </div>
+              <div>
+                <h3>Core rules</h3>
+                <p>Edge‑first trading: map states → nodes → magnets; first‑touch rejection; acceptance → chase to magnet.</p>
+                <a class="cta" href="#core-rules">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+              </div>
+              <div>
+                <h3>Core terms</h3>
+                <p>State, state node, end node, and state intensity (magnet) — concise definitions you'll reuse.</p>
+                <a class="cta" href="#core-terms">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 13l3-3 2 2 5-5"/></svg>
+              </div>
+              <div>
+                <h3>Mapping process</h3>
+                <p>How to mark states, locate nodes, identify magnets, and note distances from spot.</p>
+                <a class="cta" href="#mapping">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg>
+              </div>
+              <div>
+                <h3>Interaction rules</h3>
+                <p>Green→Red first‑touch rejection, Red→Green mirror, and acceptance → magnet traversal.</p>
+                <a class="cta" href="#interaction">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 5 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V22a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 19.6 6.04l-.06.06c.46.46 1.12.6 1.72.33.38-.17.8-.26 1.23-.26s.85.09 1.23.26c.6.27 1.26.13 1.72-.33l.06-.06A2 2 0 1 1 19.6 6.04l-.06.06c-.46.46-.6 1.12-.33 1.72.17.38.26.8.26 1.23s-.09.85-.26 1.23c-.27.6-.13 1.26.33 1.72z"/></svg>
+              </div>
+              <div>
+                <h3>Execution playbooks</h3>
+                <p>Edges only: Short at Red node (from green), Long at Green node (from red). Triggers, stops, targets.</p>
+                <a class="cta" href="#execution">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 6 -->
+            <article class="card">
+              <div class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+              </div>
+              <div>
+                <h3>Risk System Methodology</h3>
+                <p>Stops beyond nodes, invalidations, adds, and when not to fade stacked states. Checklist included.</p>
+                <a class="cta" href="#risk">Browse docs
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 7: Visual Gallery -->
+            <article class="card">
+              <div class="icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              </div>
+              <div>
+                <h3>Visual Learning Gallery</h3>
+                <p>Real state/node/magnet examples with interactive carousel and explanations.</p>
+                <a class="cta" href="#gallery">Browse gallery
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <!-- Card 8: Scenario Matrix -->
+            <article class="card">
+              <div class="icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </div>
+              <div>
+                <h3>Scenario Matrix</h3>
+                <p>Complete decision matrix with mirror logic for all tape contexts.</p>
+                <a class="cta" href="#matrix">View matrix
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <!-- DOC SECTIONS -->
+        <section id="core-rules" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6v12"/><rect x="3" y="6" width="18" height="12" rx="2"/></svg>
+            </div>
+            <div>
+              <h2>Core rules</h2>
+              <p>Edge‑first system: trade at state nodes; first‑touch = rejection; acceptance → chase the magnet.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <div class="figure-inner">
+              <!-- Replace with a real screenshot of your ladder / projection -->
+              <img src="images/core-rules-hero.png" alt="State → Node → Magnet overview">
+            </div>
+            <div class="caption">State map example — annotate nodes and magnets.</div>
+          </div>
+          <div class="doc-body prose">
+            <h3>How it works</h3>
+            <ul>
+              <li>Map <strong>States → Nodes → Magnets</strong> before placing risk.</li>
+              <li><strong>Green→Red</strong> approach: base case = <strong>rejection short</strong> on the <strong>first touch</strong> of the red node.</li>
+              <li><strong>Red→Green</strong> approach: mirror — <strong>rejection long</strong> on first touch of the green node.</li>
+              <li><strong>Acceptance through a node</strong> ⇒ <strong>chase</strong> toward that state's <strong>magnet</strong>.</li>
+              <li>Stops live <strong>just beyond the node</strong> (outside the state change).</li>
+              <li>After a <strong>full traversal</strong> to the far end node, interior bars become <strong>Flat</strong> on the next pass.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="core-terms" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+            </div>
+            <div>
+              <h2>Core terms</h2>
+              <p>Keep language strict: States, State nodes, End nodes, and State intensity (Magnet).</p>
+            </div>
+          </div>
+          <div class="doc-body prose">
+            <h3>Definitions</h3>
+            <ul>
+              <li><strong>State</strong> — contiguous run of same‑color bars. Reds → <em>Red state</em>; Greens → <em>Green state</em>.</li>
+              <li><strong>State node</strong> — boundary where a green state meets a red state (interaction point).</li>
+              <li><strong>End node</strong> — the outermost bar of a state at a state node (prime entry + tight risk).</li>
+              <li><strong>State intensity (Magnet)</strong> — longest/strongest bar inside a state; once accepted, price gravitates to it.</li>
+            </ul>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/terms-1.png" alt="Labels for state / node / magnet">
+              </div>
+              <div class="caption">Label your ladder once per session and reuse across notes.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="mapping" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 13l3-3 2 2 5-5"/></svg>
+            </div>
+            <div>
+              <h2>Mapping process</h2>
+              <p>Mark states, locate nodes, identify magnets, and record distances from spot.</p>
+            </div>
+          </div>
+          <div class="doc-body prose">
+            <h3>Steps</h3>
+            <ol>
+              <li>Identify the nearest <strong>green/red states</strong> around spot.</li>
+              <li>Mark the <strong>state nodes</strong> (where states touch).</li>
+              <li>Inside each state, mark the <strong>magnet</strong> (highest state intensity).</li>
+              <li>Note <strong>distance from spot</strong> for each magnet (helps with pathing and RR).</li>
+            </ol>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/mapping-1.png" alt="Example ladder with magnets and nodes">
+              </div>
+              <div class="caption">Example mapping — spots, nodes, and magnets annotated.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="interaction" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg>
+            </div>
+            <div>
+              <h2>Interaction rules</h2>
+              <p>First touch favors rejection; acceptance means you are inside that state → expect pull to its magnet.</p>
+            </div>
+          </div>
+          <div class="doc-body prose">
+            <h3>Node logic</h3>
+            <ul>
+              <li><strong>Green→Red</strong>: first‑touch at the red node = rejection short (base case).</li>
+              <li><strong>Red→Green</strong>: mirror — rejection long at the green node.</li>
+              <li><strong>Acceptance</strong> (close + continuation through the node) ⇒ expect traversal toward the <strong>magnet</strong>.</li>
+              <li><strong>First touch</strong> has the highest expectancy; re‑tests are lower‑quality unless weaker.</li>
+            </ul>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/interaction-1.png" alt="First‑touch vs acceptance examples">
+              </div>
+              <div class="caption">Rejection vs acceptance — pick the correct side and manage to the magnet.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="execution" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V22a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 19.6 6.04l-.06.06c-.46.46-.6 1.12-.33 1.72.17.38.26.8.26 1.23s-.09.85-.26 1.23c-.27.6-.13 1.26.33 1.72z"/></svg>
+            </div>
+            <div>
+              <h2>Execution playbooks</h2>
+              <p>Edges only: enter at nodes. Stops are beyond the state change. Targets = mid‑state → opposite node → magnet.</p>
+            </div>
+          </div>
+          <div class="doc-body prose">
+            <h3>Short at Red state node (from green)</h3>
+            <ul>
+              <li><strong>Trigger</strong>: clean tap + stall · rejection wick · micro BOS (break of last HL).</li>
+              <li><strong>Stop</strong>: a few ticks <strong>above</strong> the red node.</li>
+              <li><strong>Targets</strong>: mid‑state → opposite node → red magnet.</li>
+              <li><strong>Acceptance</strong>: if accepted into red, <strong>chase short → red magnet</strong>.</li>
+            </ul>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/exec-short.png" alt="Short at red node">
+              </div>
+            </div>
+
+            <h3>Long at Green state node (from red)</h3>
+            <ul>
+              <li><strong>Trigger</strong>: clean tap + stall · rejection wick · micro BOS (break of last LH).</li>
+              <li><strong>Stop</strong>: a few ticks <strong>below</strong> the green node.</li>
+              <li><strong>Targets</strong>: mid‑state → opposite node → green magnet.</li>
+              <li><strong>Acceptance</strong>: if accepted into green, <strong>chase long → green magnet</strong>.</li>
+            </ul>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/exec-long.png" alt="Long at green node">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="risk" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back to overview</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div>
+              <h2>Risk System Methodology</h2>
+              <p>Stops beyond nodes, clear invalidations, disciplined adds, and when not to fade stacked states.</p>
+            </div>
+          </div>
+          <div class="doc-body prose">
+            <h3>Risk mechanics</h3>
+            <ul>
+              <li><strong>Stops</strong>: always just beyond the state change (outside the node).</li>
+              <li><strong>Invalidate</strong> on deep accepted penetration or three consecutive impulse prints through a thick node.</li>
+              <li><strong>Adds</strong>: re‑tests that hold with <em>weaker</em> subsequent prints only.</li>
+            </ul>
+            <h3>Guardrails</h3>
+            <ul>
+              <li>Do not short a stacked <strong>Green state</strong> without a prior transition.</li>
+              <li>Either wait for a <strong>full traversal</strong> to spend the state (next pass = Flat) or a <strong>clean Red node</strong> above.</li>
+            </ul>
+            <div class="figure">
+              <div class="figure-inner">
+                <img src="images/risk-1.png" alt="Risk examples">
+              </div>
+            </div>
+
+            <h3 id="checklist">Pre‑trade checklist</h3>
+            <ol>
+              <li>Active states, nearest <strong>node</strong>, destination <strong>magnet</strong> mapped.</li>
+              <li>Approach side and <strong>touch count</strong> (first vs re‑test) noted.</li>
+              <li>Destination state already <strong>spent</strong>? If yes, interior is <strong>Flat</strong> on next pass.</li>
+              <li>Trigger present: stall · rejection wick · micro BOS.</li>
+              <li>Stop just beyond node; targets = mid‑state → node → magnet.</li>
+              <li>News/vol envelope acceptable; if tier‑1 risk, pass or size down.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="gallery" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            </div>
+            <div>
+              <h2>Visual Learning Gallery</h2>
+              <p>State/node/magnet examples with detailed explanations.</p>
+            </div>
+          </div>
+          <div class="gallery-box">
+            <div class="gallery-view">
+              <img id="gImg" src="https://placehold.co/800x450/121f38/7aa2ff?text=State+Structure" alt="Gallery">
+              <div class="gallery-ctrl">
+                <button id="gPrev" onclick="gPrev()">‹</button>
+                <div><span id="gCount">1 / 4</span><br><span id="gCap">State structure</span></div>
+                <button id="gNext" onclick="gNext()">›</button>
+              </div>
+            </div>
+            <div id="gThumbs" class="gallery-thumbs"></div>
+            <div class="gallery-info">
+              <strong id="gTitle">Understanding Image 1:</strong>
+              <ul id="gList"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="matrix" class="doc-section">
+          <div class="doc-header">
+            <a class="backlink" href="#overview">‹ Back</a>
+          </div>
+          <div class="doc-hero">
+            <div class="glyph">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cfe0ff" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <div>
+              <h2>Scenario Matrix</h2>
+              <p>Quick reference with mirror logic.</p>
+            </div>
+          </div>
+          <div class="matrix-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <h3 style="margin:0">Decision Matrix</h3>
+              <button class="matrix-toggle" onclick="toggleMatrix()"><span id="mTxt">Show</span></button>
+            </div>
+            <div id="mContent" class="matrix-content">
+              <table class="matrix-table">
+                <tr><th>Context</th><th>Approach</th><th>Touch</th><th>Action</th><th>If Accepted</th><th>Invalidate</th></tr>
+                <tr><td>Red above</td><td>Green below</td><td>Yes</td><td class="c1">Short</td><td class="c2">→ Red magnet</td><td class="c3">Back to green</td></tr>
+                <tr><td>Red below</td><td>Green above</td><td>Yes</td><td class="c1">Bounce long</td><td class="c2">↓ if accept</td><td class="c3">Above node</td></tr>
+                <tr><td>Green below</td><td>Red above</td><td>Yes</td><td class="c1">Long</td><td class="c2">→ Green magnet</td><td class="c3">Back to red</td></tr>
+                <tr><td>Green above</td><td>Red below</td><td>Yes</td><td class="c1">Bounce short</td><td class="c2">↑ if accept</td><td class="c3">Below node</td></tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <p class="footer">© 2025 MQS. Drop images into an <code>/images</code> folder beside this file. Deploy this single HTML on Netlify.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Simple hash-router to make all buttons/tabs work
+    const sections = ["overview","core-rules","core-terms","mapping","interaction","execution","risk","gallery","matrix"];
+    function route(){
+      const hash = window.location.hash.replace('#','') || 'overview';
+      sections.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(el.classList.contains('doc-section') || id==='overview'){
+          el.classList.toggle('active', id===hash);
+          if(id==='overview'){ el.style.display = (hash==='overview') ? 'block' : 'none'; }
+        }
+      });
+      // highlight sidebar
+      document.querySelectorAll('.nav a').forEach(a=>{
+        a.classList.toggle('active', a.getAttribute('href')===('#'+hash));
+      });
+      // scroll to top of main on route
+      document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
+    }
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', ()=>{
+      // default states
+      // mark all doc sections as hidden except current
+      document.querySelectorAll('.doc-section').forEach(s=>s.classList.remove('active'));
+      route();
+    });
+  // Gallery data & helpers
+  function showSection(id){ location.hash = '#'+id; }
+  const gData=[
+    {src:'https://placehold.co/800x450/121f38/7aa2ff?text=State+Structure',cap:'State structure',exp:['<b>Green bars</b> = BUY states','<b>Red bars</b> = SELL states','<b>State nodes</b> = Where they meet','Bar length = state intensity']},
+    {src:'https://placehold.co/800x450/121f38/10b981?text=Approach+Below',cap:'Approach from below',exp:['Price approaching <b>from below</b>','Green magnet <b>1 bar above</b> node','On <b>acceptance</b> → pull to magnet','Short distance = quick hit']},
+    {src:'https://placehold.co/800x450/121f38/ef4444?text=Approach+Above',cap:'Approach from above',exp:['Price approaching <b>from above</b>','Green magnet <b>1 bar below</b> node','On <b>rejection</b> → pull to magnet','First target after rejection']},
+    {src:'https://placehold.co/800x450/121f38/f59e0b?text=Traversal',cap:'Full traversal',exp:['<b>Complete traversal</b> through state','Price hit far end node','Interior bars now <b>Flat</b>','Focus on next state node']}
+  ];
+  let gIdx=0;
+  function gUpdate(){
+    const d=gData[gIdx];
+    const img=document.getElementById('gImg'); if(!img) return;
+    img.src=d.src;
+    document.getElementById('gCount').textContent=(gIdx+1)+' / '+gData.length;
+    document.getElementById('gCap').textContent=d.cap;
+    document.getElementById('gTitle').textContent='Understanding Image '+(gIdx+1)+':';
+    const list=document.getElementById('gList'); list.innerHTML=d.exp.map(e=>'<li>'+e+'</li>').join('');
+    const prev=document.getElementById('gPrev'); const next=document.getElementById('gNext');
+    prev.disabled=(gIdx===0); next.disabled=(gIdx===gData.length-1);
+    document.querySelectorAll('.gallery-thumbs div').forEach((t,i)=>t.classList.toggle('active',i===gIdx));
+  }
+  function gPrev(){ if(gIdx>0){ gIdx--; gUpdate(); } }
+  function gNext(){ if(gIdx<gData.length-1){ gIdx++; gUpdate(); } }
+  function gInit(){
+    const c=document.getElementById('gThumbs'); if(!c) return;
+    c.innerHTML='';
+    gData.forEach((d,i)=>{ const t=document.createElement('div'); t.className=(i===0?'active':''); t.textContent='Img '+(i+1); t.onclick=()=>{ gIdx=i; gUpdate(); }; c.appendChild(t); });
+    gUpdate();
+  }
+
+  // Matrix toggle
+  function toggleMatrix(){
+    const c=document.getElementById('mContent'); if(!c) return;
+    const t=document.getElementById('mTxt');
+    const show=c.classList.toggle('show');
+    if(t) t.textContent = show ? 'Hide' : 'Show';
+  }
+
+  // Init gallery once DOM ready
+  window.addEventListener('DOMContentLoaded', gInit);
+</script>
+</body>
+</html>
